@@ -3,21 +3,57 @@
 
 #include <iostream>
 #include<random>
+#include <string>
+#include <vector>
 
-int getRandomUniformNumber(int min, int max);
-int getRandomNormalNumber(int mean, int standardDeviation);
 
-struct Object
+struct Creature
 {
     std::string name;
     int strength{ 0 };
     int health{ 0 };
 };
 
+const int MEAN = 30;
+const int STANDARD_DEVIATION = 5;
+const int MIN = 1;
+const int MAX = 3;
+
+int getRandomUniformNumber(int min, int max);
+int getRandomNormalNumber(int mean, int standardDeviation);
+void spawnMonsters(std::vector<Creature> &monsterVector);
+
 int main()
 {
-    std::cout << getRandomNormalNumber(30,5) << std::endl;
-    std::cout << getRandomUniformNumber(1,3);
+
+    Creature Player{
+        "Hrothgar",
+        getRandomNormalNumber(MEAN, STANDARD_DEVIATION),
+        getRandomNormalNumber(MEAN, STANDARD_DEVIATION)
+    };
+
+    std::vector<Creature> monsters;
+
+    spawnMonsters(monsters);
+
+    std::cout << monsters.size();
+}
+
+void spawnMonsters(std::vector<Creature> &monsterVector)
+{
+    int numberOfMonsters{ getRandomUniformNumber(MIN, MAX)};
+
+    for (int i = 0; i < numberOfMonsters; i++)
+    {
+        Creature Monster{
+            "Monster" + (i + 1),
+            getRandomNormalNumber(MEAN, STANDARD_DEVIATION),
+            getRandomNormalNumber(MEAN, STANDARD_DEVIATION)
+        };
+
+        monsterVector.push_back(Monster);
+    }
+
 }
 
 int getRandomUniformNumber(int min, int max)
@@ -45,7 +81,7 @@ int getRandomNormalNumber(int mean, int standardDeviation)
     std::default_random_engine e(rdev()); //engine
     std::normal_distribution<double> normalDistributionNumber(mean, standardDeviation); //mean, standard deviation
 
-    int result{ normalDistributionNumber(e) };
+    int result{ (int)normalDistributionNumber(e) };
 
     if (result < 1)
     {
