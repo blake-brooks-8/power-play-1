@@ -56,6 +56,25 @@ int main()
 void playerTurn(Creature player, std::vector<Creature> &monsters)
 {
     displayCreatureName(player);
+
+    std::cout << "Would you like to: \n";
+    std::cout << "1. Attack\n";
+    std::cout << "2. Heal\n";
+
+    int response{ 0 };
+    std::cin >> response;
+
+    switch (response)
+    {
+    case 1:
+        //attack();
+        break;
+    case 2:
+        //heal();
+        break;
+    default:
+        break;
+    }
 }
 
 void displayCreatureName(Creature creature)
