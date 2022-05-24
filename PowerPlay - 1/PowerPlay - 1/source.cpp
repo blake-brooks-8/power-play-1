@@ -22,14 +22,15 @@ const int MAX = 3;
 int getRandomUniformNumber(int min, int max);
 int getRandomNormalNumber(int mean, int standardDeviation);
 void spawnMonsters(std::vector<Creature> &monsterVector);
-void monsterTurn(std::vector<Creature> monsters);
-void playerTurn(std::vector<Creature>& monsters);
+void monsterTurn(Creature& player, std::vector<Creature> monsters);
+void playerTurn(Creature player, std::vector<Creature>& monsters);
 bool checkForHit();
+void displayCreatureName(Creature creature);
 
 int main()
 {
 
-    Creature Player{
+    Creature player{
         "Hrothgar",
         getRandomNormalNumber(MEAN, STANDARD_DEVIATION),
         getRandomNormalNumber(MEAN, STANDARD_DEVIATION)
@@ -38,12 +39,12 @@ int main()
     std::vector<Creature> monsters;
 
     spawnMonsters(monsters);
-
-    std::cout << checkForHit();
     
     while (false)
     {
-        //display player name
+        playerTurn(player, monsters);
+
+        monsterTurn(player, monsters);
 
         //display all monster's name and health'
 
@@ -52,12 +53,17 @@ int main()
 
 }
 
-void playerTurn(std::vector<Creature> &monsters)
+void playerTurn(Creature player, std::vector<Creature> &monsters)
 {
-
+    displayCreatureName(player);
 }
 
-void monsterTurn(std::vector<Creature> monsters)
+void displayCreatureName(Creature creature)
+{
+    std::cout << creature.name;
+}
+
+void monsterTurn(Creature &player, std::vector<Creature> monsters)
 {
     for (Creature monster : monsters)
     {
