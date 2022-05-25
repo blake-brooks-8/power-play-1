@@ -22,13 +22,16 @@ const int MAX = 3;
 int getRandomUniformNumber(int min, int max);
 int getRandomNormalNumber(int mean, int standardDeviation);
 void spawnMonsters(std::vector<Creature> &monsterVector);
-void monsterTurn(Creature& player, std::vector<Creature> monsters);
+void monsterTurn(Creature& player, std::vector<Creature> &monsters);
 void playerTurn(Creature &player, std::vector<Creature>& monsters);
 bool canHit();
-void displayCreatureName(Creature creature);
+void displayCreatureDetails(Creature creature);
 void attack(Creature& attacker, Creature& defender);
 void playerAttack(Creature &player, std::vector<Creature> &monsters);
 void validateUserInput(int &response, int numberOfOptions);
+void heal(Creature& player);
+void gameOver(std::string name);
+bool checkForWinner(std::vector<Creature> monsters);
 
 int main()
 {
@@ -43,22 +46,19 @@ int main()
 
     spawnMonsters(monsters);
     
-    while (false)
+    while (true)
     {
         playerTurn(player, monsters);
 
         monsterTurn(player, monsters);
 
-        //display all monster's name and health'
-
-        //prompt the user to heal or attack
     }
 
 }
 
 void playerTurn(Creature &player, std::vector<Creature> &monsters)
 {
-    displayCreatureName(player);
+    displayCreatureDetails(player);
 
     std::cout << "Would you like to: \n";
     std::cout << "1. Attack\n";
@@ -75,32 +75,95 @@ void playerTurn(Creature &player, std::vector<Creature> &monsters)
         playerAttack(player, monsters);
         break;
     case 2:
-        //heal();
+        heal(player);
         break;
     default:
         break;
     }
 }
 
-void validateUserInput(int& response, int numberOfOptions)
+void heal(Creature& player)
 {
-    while (!std::cin.good() || response < 1 || response > numberOfOptions)
-    {
-        std::cout << "Error, please select a number between " << 1 << " and " << numberOfOptions << ": ";
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cin >> response;
-    }
+    player.health += (player.strength * 2);
 }
 
 void playerAttack(Creature &player, std::vector<Creature> &monsters)
 {
+    std::cout << "Which monster would you like to attack: \n";
+    int size = monsters.size();
+    for (int i = 0; i < size; i++)
+    {
+        if (monsters[i].health < 1)
+        {
+            std::cout << i + 1 << ". " << monsters[i].name << ", " << "<DEAD>";
+        }
+        else
+        {
+            std::cout << i + 1 << ". " << monsters[i].name << ", " << "Health: " << monsters[i].health << '\n';
 
+        }
+    }
+
+    int response{ 0 };
+    std::cin >> response;
+
+    validateUserInput(response, monsters.size());
+    
+    Creature currentMonster = monsters[response - 1];
+    
+    if (currentMonster.health > 1)
+    {
+        attack(player, monsters[response - 1]);
+        if (checkForWinner(monsters))
+        {
+            gameOver(player.name);
+        }
+    }
+    else
+    {
+        std::cout << "That monster is dead. Try again. ";
+        playerAttack(player, monsters);
+    }
 }
 
-void displayCreatureName(Creature creature)
+bool checkForWinner(std::vector<Creature> monsters)
 {
-    std::cout << creature.name;
+    for (Creature monster : monsters)
+    {
+        if (monster.health > 1)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void gameOver(std::string name)
+{
+    if (name != "Hrothgar")
+    {
+        std::cout << "You lose!";
+    }
+    else
+    {
+        std::cout << "You win!";
+    }
+
+    exit(0);
+}
+
+void displayCreatureDetails(Creature creature)
+{
+    std::cout << "Name: " << creature.name << '\n';
+    if (creature.health < 1)
+    {
+        std::cout << "<DEAD>\n";
+    }
+    else
+    {
+        std::cout << "Health: " << creature.health << '\n';
+    }
 }
 
 void attack(Creature &attacker, Creature &defender)
@@ -108,7 +171,7 @@ void attack(Creature &attacker, Creature &defender)
     defender.health -= attacker.strength;
 }
 
-void monsterTurn(Creature &player, std::vector<Creature> monsters)
+void monsterTurn(Creature &player, std::vector<Creature> &monsters)
 {
     for (Creature monster : monsters)
     {
@@ -118,7 +181,7 @@ void monsterTurn(Creature &player, std::vector<Creature> monsters)
         }
         if (player.health < 1)
         {
-            //gameOver();
+            gameOver("Monsters");
             return;
         }
     }
@@ -127,11 +190,13 @@ void monsterTurn(Creature &player, std::vector<Creature> monsters)
 void spawnMonsters(std::vector<Creature> &monsterVector)
 {
     int numberOfMonsters{ getRandomUniformNumber(MIN, MAX)};
+    std::string monsterString{ "Monster" };
 
     for (int i = 0; i < numberOfMonsters; i++)
     {
+        int currentNumber{ i + 1 };
         Creature Monster{
-            "Monster" + (i + 1),
+            monsterString + std::to_string(currentNumber),
             getRandomNormalNumber(MEAN, STANDARD_DEVIATION),
             getRandomNormalNumber(MEAN, STANDARD_DEVIATION)
         };
@@ -186,4 +251,15 @@ bool canHit()
     bool outcome = distribution(generator);
 
     return outcome;
+}
+
+void validateUserInput(int& response, int numberOfOptions)
+{
+    while (!std::cin.good() || response < 1 || response > numberOfOptions)
+    {
+        std::cout << "Error, please select a number between " << 1 << " and " << numberOfOptions << ": ";
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cin >> response;
+    }
 }
