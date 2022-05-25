@@ -5,7 +5,6 @@
 #include<random>
 #include <string>
 #include <vector>
-#include "helper.h"
 
 
 struct Creature
@@ -29,6 +28,7 @@ bool canHit();
 void displayCreatureName(Creature creature);
 void attack(Creature& attacker, Creature& defender);
 void playerAttack(Creature &player, std::vector<Creature> &monsters);
+void validateUserInput(int &response, int numberOfOptions);
 
 int main()
 {
@@ -67,7 +67,7 @@ void playerTurn(Creature &player, std::vector<Creature> &monsters)
     int response{ 0 };
     std::cin >> response;
 
-    Helper::validateUserInput(response, 2);
+    validateUserInput(response, 2);
 
     switch (response)
     {
@@ -79,6 +79,17 @@ void playerTurn(Creature &player, std::vector<Creature> &monsters)
         break;
     default:
         break;
+    }
+}
+
+void validateUserInput(int& response, int numberOfOptions)
+{
+    while (!std::cin.good() || response < 1 || response > numberOfOptions)
+    {
+        std::cout << "Error, please select a number between " << 1 << " and " << numberOfOptions << ": ";
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cin >> response;
     }
 }
 
