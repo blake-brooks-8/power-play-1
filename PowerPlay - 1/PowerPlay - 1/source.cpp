@@ -175,6 +175,10 @@ void monsterTurn(Creature &player, std::vector<Creature> &monsters)
 {
     for (Creature monster : monsters)
     {
+        if (monster.health < 1)
+        {
+            continue;
+        }
         if (canHit())
         {
             attack(monster, player);
