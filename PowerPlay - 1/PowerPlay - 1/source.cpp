@@ -5,6 +5,7 @@
 #include<random>
 #include <string>
 #include <vector>
+#include "helper.h"
 
 
 struct Creature
@@ -23,9 +24,11 @@ int getRandomUniformNumber(int min, int max);
 int getRandomNormalNumber(int mean, int standardDeviation);
 void spawnMonsters(std::vector<Creature> &monsterVector);
 void monsterTurn(Creature& player, std::vector<Creature> monsters);
-void playerTurn(Creature player, std::vector<Creature>& monsters);
-bool checkForHit();
+void playerTurn(Creature &player, std::vector<Creature>& monsters);
+bool canHit();
 void displayCreatureName(Creature creature);
+void attack(Creature& attacker, Creature& defender);
+void playerAttack(Creature &player, std::vector<Creature> &monsters);
 
 int main()
 {
@@ -53,7 +56,7 @@ int main()
 
 }
 
-void playerTurn(Creature player, std::vector<Creature> &monsters)
+void playerTurn(Creature &player, std::vector<Creature> &monsters)
 {
     displayCreatureName(player);
 
@@ -64,10 +67,12 @@ void playerTurn(Creature player, std::vector<Creature> &monsters)
     int response{ 0 };
     std::cin >> response;
 
+    Helper::validateUserInput(response, 2);
+
     switch (response)
     {
     case 1:
-        //attack();
+        playerAttack(player, monsters);
         break;
     case 2:
         //heal();
@@ -77,16 +82,34 @@ void playerTurn(Creature player, std::vector<Creature> &monsters)
     }
 }
 
+void playerAttack(Creature &player, std::vector<Creature> &monsters)
+{
+
+}
+
 void displayCreatureName(Creature creature)
 {
     std::cout << creature.name;
+}
+
+void attack(Creature &attacker, Creature &defender)
+{
+    defender.health -= attacker.strength;
 }
 
 void monsterTurn(Creature &player, std::vector<Creature> monsters)
 {
     for (Creature monster : monsters)
     {
-        //attempt attack 
+        if (canHit())
+        {
+            attack(monster, player);
+        }
+        if (player.health < 1)
+        {
+            //gameOver();
+            return;
+        }
     }
 }
 
@@ -144,7 +167,7 @@ int getRandomNormalNumber(int mean, int standardDeviation)
     }
 }
 
-bool checkForHit()
+bool canHit()
 {
     std::random_device device;
     std::mt19937 generator(device());
